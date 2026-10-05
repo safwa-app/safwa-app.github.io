@@ -1,5 +1,5 @@
 {
-    "name": "الصفوة لمتابعة الأبناء",
+    "name": "الصفوة لمتابعة الطالب",
     "short_name": "الصفوة",
     "start_url": ".",
     "display": "standalone",
@@ -7,7 +7,7 @@
     "lang": "ar",
     "background_color": "#F7F5EF",
     "theme_color": "#1F6F5C",
-    "description": "الصفوة لمتابعة الأبناء",
+    "description": "الصفوة لمتابعة الطالب — للطالب ووليّ أمره",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

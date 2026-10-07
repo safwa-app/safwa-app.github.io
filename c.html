@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>التحقّق من الوثيقة</title>
+<!--
+  صفحة تحويلٍ فقط — يُنشر في مستودع SafwaParents (https://safwa-app.github.io/c).
+  الـQR على الشهادة: https://safwa-app.github.io/c?<الرمز>
+  ⇐ صفحة التحقّق في APEX. لا بيانات هنا: التحقّق كلّه في القاعدة.
+
+  ⚠️ هذا الملفّ والمنظّمة safwa-app صارا جزءًا من كلّ شهادةٍ مطبوعة:
+     لا يُحذف الملفّ، ولا يُعاد تسمية المنظّمة. وتغيير وجهة التحويل
+     (APEX_URL) يكون هنا وحده، فتبقى الأوراق القديمة صالحة.
+-->
+<style>
+  :root { --bg:#f7f5ef; --fg:#2b2b2b; --muted:#6b6b6b; --accent:#1f6f5c; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#1b1d1c; --fg:#ececec; --muted:#a5a5a5; --accent:#6fc3a9; }
+  }
+  html,body { margin:0; background:var(--bg); color:var(--fg);
+    font-family: system-ui, "Segoe UI", Tahoma, sans-serif; }
+  main { max-width:420px; margin:18vh auto 0; padding:0 16px; text-align:center; line-height:1.8; }
+  a { color:var(--accent); }
+  p.muted { color:var(--muted); font-size:.9rem; }
+</style>
+</head>
+<body>
+<main>
+  <p>جارٍ فتح صفحة التحقّق من الوثيقة…</p>
+  <p class="muted" id="fallback"></p>
+</main>
+<script>
+  // 🔑 وجهة التحويل — صفحة 2 العامّة في تطبيق APEX 102 (SAFWA-PUSH).
+  //    الجلسة 0: صفحةٌ عامّة لا تحتاج دخولًا.
+  var APEX_URL = 'https://g0a3378e3bd0d3a-dbcpc2023.adb.me-abudhabi-1.oraclecloudapps.com'
+               + '/ords/f?p=102:2:0::NO::P2_T:';
+
+  // الرمز بعد «?» — أحرفٌ وأرقام وحدها، كي لا يُحقن شيءٌ في الرابط
+  var t = (location.search || '').replace(/^\?/, '').replace(/[^0-9A-Za-z]/g, '').slice(0, 16);
+  var target = APEX_URL + encodeURIComponent(t.toUpperCase());
+  if (t) {
+    location.replace(target);
+    document.getElementById('fallback').innerHTML =
+      'إن لم تُفتح تلقائيًّا: <a href="' + target + '">اضغط هنا</a>';
+  } else {
+    document.getElementById('fallback').textContent =
+      'الرابط ناقص — امسح رمز الـQR على الوثيقة مرّةً أخرى.';
+  }
+</script>
+</body>
+</html>

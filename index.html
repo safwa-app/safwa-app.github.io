@@ -31,6 +31,13 @@
 
   <title>الصفوة لمتابعة الطالب</title>
   <link rel="manifest" href="manifest.json">
+
+  <!-- معاينة الشهادة (حزمة printing): pdf.js 6 الافتراضيّ فيها يستعمل
+       Map.getOrInsertComputed فيفشل في متصفّحات الجوال (سامسونج) —
+       فالنسخة legacy من pdf.js 4، المبنيّة للمتصفّحات الأقدم. -->
+  <script>
+    window.dartPdfJsBaseUrl = "https://unpkg.com/pdfjs-dist@4.10.38/legacy/build/";
+  </script>
 </head>
 <body>
   <!--

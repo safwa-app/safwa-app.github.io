@@ -1065,7 +1065,8 @@
     el.textContent = '0';
     requestAnimationFrame(step);
   }
-  var countIO = (!reduce && 'IntersectionObserver' in window) ? new IntersectionObserver(function (es) {
+  /* لا يتقيّد بـreduce عمدًا: العدّ تغيّرُ أرقامٍ في مكانها لا حركة، وفي Windows يُطفأ «تأثيرات الحركة» كثيرًا فلا يرى أحدٌ العدّ */
+  var countIO = ('IntersectionObserver' in window) ? new IntersectionObserver(function (es) {
     es.forEach(function (x) {
       if (!x.isIntersecting) return;
       countIO.unobserve(x.target);

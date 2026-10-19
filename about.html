@@ -1053,16 +1053,31 @@
   /* ── الأرقام الحيّة ── */
   function fmt(n) { return Number(n || 0).toLocaleString('en-US'); }
   function pick(o, path) { return path.split('.').reduce(function (a, k) { return a == null ? a : a[k]; }, o); }
-  function countUp(el, to) {
-    if (reduce || to < 20) { el.textContent = fmt(to); return; }
-    var t0 = null, dur = 900;
+  /* العدّ يبدأ حين تظهر البطاقة للزائر لا حين يصل الجواب — الأرقام أسفل الصفحة */
+  function runCount(el, to) {
+    var t0 = null, dur = to < 20 ? 1200 : 2200;
     function step(ts) {
       if (!t0) t0 = ts;
       var p = Math.min(1, (ts - t0) / dur), e = 1 - Math.pow(1 - p, 3);
       el.textContent = fmt(Math.round(to * e));
       if (p < 1) requestAnimationFrame(step);
     }
+    el.textContent = '0';
     requestAnimationFrame(step);
+  }
+  /* لا يتقيّد بـreduce عمدًا: العدّ تغيّرُ أرقامٍ في مكانها لا حركة، وفي Windows يُطفأ «تأثيرات الحركة» كثيرًا فلا يرى أحدٌ العدّ */
+  var countIO = ('IntersectionObserver' in window) ? new IntersectionObserver(function (es) {
+    es.forEach(function (x) {
+      if (!x.isIntersecting) return;
+      countIO.unobserve(x.target);
+      runCount(x.target, Number(x.target.getAttribute('data-to')));
+    });
+  }, { threshold: 0.6 }) : null;
+  function countUp(el, to) {
+    if (!countIO || !(to > 0)) { el.textContent = fmt(to); return; }
+    el.setAttribute('data-to', to);
+    el.textContent = '0';
+    countIO.observe(el);
   }
   function bars(boxId, monthsId, rows, key, cls) {
     var box = document.getElementById(boxId), mb = document.getElementById(monthsId);

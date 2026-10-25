@@ -151,6 +151,12 @@
   .board-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin-bottom: 14px; }
   .board-head h2 { font-family: var(--f-display); font-size: 22px; margin: 0; }
   .board-head .asof { color: var(--muted); font-size: 13.5px; margin-inline-start: auto; display: inline-flex; align-items: center; gap: 6px; }
+  .since { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin: -4px 0 16px; padding: 10px 14px;
+           border-radius: 12px; background: var(--gold-soft); color: var(--fg); font-size: 14.5px; line-height: 1.7; }
+  .since .ic { color: var(--gold); width: 20px; height: 20px; flex: none; }
+  .since .ic svg { width: 100%; height: 100%; }
+  .since b { font-weight: 700; color: var(--gold); }
+  .since .rate:empty { display: none; }
   .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex: none; }
   .dot.on { background: #2fa36b; box-shadow: 0 0 0 4px color-mix(in srgb, #2fa36b 25%, transparent); }
   .groups { display: grid; gap: 22px; }
@@ -512,7 +518,8 @@
   <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M19.4 10A7.5 7.5 0 005.3 8 6 6 0 006 20h13a5 5 0 00.4-10zM19 18H6a4 4 0 01-.4-8l1-.1.5-.9a5.5 5.5 0 0110.3 1.5l.3 1.5H19a3 3 0 010 6zM3.3 2.3l18.4 18.4-1.4 1.4L1.9 3.7z"/></symbol>
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M12 4l-1.4 1.4 5.6 5.6H4v2h12.2l-5.6 5.6L12 20l8-8z"/></symbol>
   <symbol id="i-ok" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm-2 15l-5-5 1.4-1.4 3.6 3.6 7.6-7.6L19 8l-9 9z"/></symbol>
-  <symbol id="i-info" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2zM7 12h5v5H7z"/></symbol>
+  <symbol id="i-info"viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></symbol>
 </svg>
 
 <header class="nav gutter">
@@ -558,6 +565,9 @@
         <h2>البرنامج اليوم</h2>
         <span class="asof"><i class="dot" id="liveDot"></i><span id="asOf">جارٍ جلب الأرقام من القاعدة…</span></span>
       </div>
+      <p class="since"><i class="ic"><svg aria-hidden="true"><use href="#i-cal"/></svg></i>
+        <span>بدأ الإدخال على التطبيق في <b>1 يونيو 2026</b><span id="sinceAgo"></span></span>
+        <span class="rate" id="sinceRate"></span></p>
 
       <div class="groups">
         <div class="group">
@@ -1115,12 +1125,32 @@
     courses: { enrollments: 920 }
   };
 
+  /* بداية الإدخال على التطبيق: تُظهر الأرقامَ على قدر مدّتها القصيرة */
+  var START = new Date(2026, 5, 1);
+  var sinceDays = Math.max(1, Math.floor((Date.now() - START.getTime()) / 864e5));
+  function arCount(n, one, two, few, many) {
+    if (n === 1) return one;
+    if (n === 2) return two;
+    return fmt(n) + ' ' + (n % 100 >= 3 && n % 100 <= 10 ? few : many);
+  }
+  (function () {
+    var months = Math.floor(sinceDays / 30.44);
+    var t = ' — أي قبل ' + arCount(sinceDays, 'يومٍ واحد', 'يومين', 'أيام', 'يومًا') + ' فقط';
+    if (months >= 1) t += ' (نحو ' + arCount(months, 'شهر', 'شهرين', 'أشهر', 'شهرًا') + ')';
+    document.getElementById('sinceAgo').textContent = t;
+  })();
+
   function fillStats(j) {
     document.querySelectorAll('[data-k]').forEach(function (el) {
       var v = pick(j, el.getAttribute('data-k'));
       el.classList.remove('sk');
       if (v != null) countUp(el, Number(v)); else { el.textContent = '—'; el.classList.add('na'); }
     });
+    var rec = Number(pick(j, 'recitations.all'));
+    if (rec > 0) {
+      document.getElementById('sinceRate').innerHTML =
+        '· بمعدّل <b>' + fmt(Math.round(rec / sinceDays)) + '</b> جلسة تسميع كل يوم';
+    }
   }
 
   fetch(API + 'public/stats', { cache: 'no-cache' })
